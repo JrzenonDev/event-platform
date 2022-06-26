@@ -1,24 +1,50 @@
-import { CheckCircle } from 'phosphor-react'
+import { CheckCircle, Lock } from 'phosphor-react'
+import { format, isPast } from 'date-fns'
+import ptBR from 'date-fns/locale/pt-BR'
 
-export function Lesson() {
+interface LessonProps {
+  title: String
+  slug: String
+  availableAt: Date
+  type: 'live' | 'class'
+}
+
+export function Lesson(props: LessonProps) {
+  
+  const isLessonAvailable = isPast(props.availableAt)
+  const availableDateFormatted = format(props.availableAt, "EEEE' • 'd' de 'MMMM' •'K'h'mm", {
+    locale: ptBR
+  })
+
   return (
     <a href="#">
       <span className="text-gray-300">
-        19:00h - Aula 4 • Inscrição via GraphQL
+        { availableDateFormatted }
       </span>
 
       <div className="rounded border border-gray-500 p-4 mt-2">
         <header className="flex items-center justify-between">
-          <span className="text-sm text-blue-500 font-medium flex items-center gap-2">
-            <CheckCircle size={20} />
-            Conteúdo Liberado
-          </span>
+          
+          { isLessonAvailable ? (
+            <span className="text-sm text-blue-500 font-medium flex items-center gap-2">
+              <CheckCircle size={20} />
+              Conteúdo Liberado
+            </span>
+          ) : (
+            <span className="text-sm text-orange-500 font-medium flex items-center gap-2">
+              <Lock size={20} />
+              Em breve
+            </span>
+          )}
+
           <span className="text-xs rounded py-[0.125rem] px-2 text-white border border-green-300">
-            AO VIVO
+            { props.type === 'live' ? 'AO VIVO' : 'AULA PRÁTICA' }
           </span>
         </header>
 
-        <strong>Inscrição do curso</strong>
+        <strong>
+          { props.title }
+        </strong>
       </div>
     </a>
   )
